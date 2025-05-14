@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import Button from './ui/button/Button.vue';
 
-
 const { task } = defineProps(['task'])
 </script>
 <template>

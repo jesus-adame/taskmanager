@@ -85,6 +85,7 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        return redirect(route('tasks.index'))
+            ->with('success', 'Eliminado correctamente');
     }
 }

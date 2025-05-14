@@ -43,17 +43,17 @@ const submit = () => {
                 <form @submit.prevent="submit" class="grid gap-4">
                     <label for="">Nombre</label>
                     <Input v-model="form.title" class="block fluid" />
-                    <div v-if="form.errors.title">{{ form.errors.title }}</div>
+                    <div v-if="form.errors.title" class="text-red-600">{{ form.errors.title }}</div>
                     <label for="">Descripción</label>
                     <Input v-model="form.description" class="block fluid" />
-                    <div v-if="form.errors.description">{{ form.errors.description }}</div>
+                    <div v-if="form.errors.description" class="text-red-600">{{ form.errors.description }}</div>
                     <label for="">Prioridad</label>
                     <Select v-model="form.priority" class="block fluid">
                         <option v-for="priority in priorities" :key="priority.value" :value="priority.value">
                             {{ priority.label }}
                         </option>
                     </Select>
-                    <div v-if="form.errors.priority">{{ form.errors.priority }}</div>
+                    <div v-if="form.errors.priority" class="text-red-600">{{ form.errors.priority }}</div>
 
                     <Button type="submit">Guardar</Button>
                 </form>
