@@ -14,10 +14,11 @@ class TaskController extends Controller
      */
     public function index(): Response
     {
-        $tasks = Task::paginate(10);
+        $tasks = Task::orderBy('status', 'desc')
+            ->paginate(8);
 
         return inertia('Tasks/Index', [
-            'tasks' => $tasks,
+            'page_result' => $tasks,
         ]);
     }
 
@@ -69,7 +70,16 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+
+        if ($task->user_id !== Auth::user()->id) {
+            return redirect(route('tasks.index'))
+                ->with('error', 'No tienes permiso para editar esta tarea');
+        }
+
+        return inertia('Tasks/Edit', [
+            'task' => $task,
+        ]);
     }
 
     /**
@@ -77,7 +87,41 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'title' => 'nullable|max:200',
+            'description' => 'nullable|max:200',
+            'status' => 'nullable|in:pending,completed',
+            'priority' => 'nullable|in:low,medium,high',
+        ]);
+
+        $task = Task::findOrFail($id);
+
+        if ($task->user_id !== Auth::user()->id) {
+            return redirect(route('tasks.index'))
+                ->with('error', 'No tienes permiso para editar esta tarea');
+        }
+
+        if ($request->has('status')) {
+            $task->status = $request->input('status');
+        }
+
+        if ($request->has('priority')) {
+            $task->priority = $request->input('priority');
+        }
+
+        if ($request->has('title')) {
+            $task->title = $request->input('title');
+        }
+
+        if ($request->has('description')) {
+            $task->description = $request->input('description');
+        }
+
+        $task->save();
+
+        return redirect(route('tasks.index'))
+            ->with('success', 'Actualizado correctamente')
+            ->with('task', $task);
     }
 
     /**
@@ -85,6 +129,14 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
+        $task = Task::findOrFail($id);
+
+        if ($task->user_id !== Auth::user()->id) {
+            return redirect(route('tasks.index'))
+                ->with('error', 'No tienes permiso para eliminar esta tarea');
+        }
+        $task->delete();
+
         return redirect(route('tasks.index'))
             ->with('success', 'Eliminado correctamente');
     }
